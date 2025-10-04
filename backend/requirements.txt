@@ -6,3 +6,4 @@ openai
 pydantic
 sse-starlette
 selenium
+apify-client

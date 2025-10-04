@@ -1,26 +1,19 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
+from config import config
 from routes.search import search_router
-from services.browser_service import service as browser_service
 from services.logger_service import logger_service
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     logger_service.info("Starting application")
-
-    try:
-        browser_service.initialize()
-        logger_service.info("Browser service initialized successfully")
-    except Exception as e:
-        logger_service.error(f"Failed to initialize browser service: {e}")
-        raise
+    config.validate_required_config()
 
     yield
 
     logger_service.info("Shutting down application")
-    browser_service.shutdown()
     logger_service.info("Application shutdown complete")
 
 
@@ -38,8 +31,6 @@ app.include_router(search_router, prefix="/search", tags=["search"])
 async def health_check():
     return {
         "status": "healthy",
-        "browser_initialized": browser_service.is_initialized,
-        "browser_logged_in": browser_service.is_logged_in
     }
 
 

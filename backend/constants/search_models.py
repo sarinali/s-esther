@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 
 class SearchUserPayload(BaseModel):
-    name: str
+    profile_url: str
     location: Optional[str] = None
     limit: Optional[int] = 10
 
