@@ -1,4 +1,3 @@
-import asyncio
 from typing import List
 from urllib.parse import quote
 
@@ -64,30 +63,96 @@ class LinkedInScraperService(UserProfileService):
             logger_service.error(f"Unexpected error during LinkedIn search: {e}")
             raise
 
+    async def get_single_profile(self, url: str) -> UserProfile:
+        if not browser_service.is_initialized:
+            raise RuntimeError("Browser service not initialized")
+
+        if not browser_service.is_logged_in:
+            raise RuntimeError("Not logged into LinkedIn")
+
+        logger_service.info(f"Fetching single LinkedIn profile: {url}")
+
+        try:
+            with browser_service.new_tab() as driver:
+                driver.get(url)
+
+                wait = WebDriverWait(driver, self.search_timeout)
+                wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+
+                sleep(3)
+
+                try:
+                    name = browser_service.safe_extract_text_from_driver(
+                        driver,
+                        "h1.text-heading-xlarge"
+                    )
+
+                    job_title = browser_service.safe_extract_text_from_driver(
+                        driver,
+                        ".text-body-medium.break-words"
+                    )
+
+                    location = browser_service.safe_extract_text_from_driver(
+                        driver,
+                        ".text-body-small.inline.t-black--light.break-words"
+                    )
+
+                    profile_image_url = browser_service.safe_extract_attribute_from_driver(
+                        driver,
+                        "img.pv-top-card-profile-picture__image",
+                        "src"
+                    )
+
+                    if not name:
+                        raise ValueError("Could not extract name from profile page")
+
+                    profile = UserProfile(
+                        name=name,
+                        profile_link=url,
+                        job_title=job_title,
+                        location=location,
+                        profile_image_url=profile_image_url,
+                        platform="linkedin"
+                    )
+
+                    logger_service.info(f"Successfully extracted profile for: {name}")
+                    return profile
+
+                except Exception as e:
+                    logger_service.error(f"Error extracting single profile data: {e}")
+                    raise
+
+        except WebDriverException as e:
+            logger_service.error(f"WebDriver error during single profile fetch: {e}")
+            raise
+        except Exception as e:
+            logger_service.error(f"Unexpected error during single profile fetch: {e}")
+            raise
+
     def _extract_profile_data(self, li_element) -> UserProfile:
         try:
-            name = self._safe_extract_text(
+            name = browser_service.safe_extract_text(
                 li_element,
                 "a[data-test-app-aware-link] span[dir='ltr'] span[aria-hidden='true']"
             )
 
-            profile_link = self._safe_extract_attribute(
+            profile_link = browser_service.safe_extract_attribute(
                 li_element,
                 "a[data-test-app-aware-link]",
                 "href"
             )
 
-            job_title = self._safe_extract_text(
+            job_title = browser_service.safe_extract_text(
                 li_element,
                 "div.xRJOgrQuFzciyRxKOIOwvaYwLREkZzCCxtQk"
             )
 
-            location = self._safe_extract_text(
+            location = browser_service.safe_extract_text(
                 li_element,
                 "div.JcoRZcgVWQelOtLJFmykrzjWASePpwDbmoyVM"
             )
 
-            profile_image_url = self._safe_extract_attribute(
+            profile_image_url = browser_service.safe_extract_attribute(
                 li_element,
                 "img.presence-entity__image",
                 "src"
@@ -108,20 +173,6 @@ class LinkedInScraperService(UserProfileService):
 
         except Exception as e:
             logger_service.warning(f"Error extracting profile data: {e}")
-            return None
-
-    def _safe_extract_text(self, parent_element, css_selector: str) -> str:
-        try:
-            element = parent_element.find_element(By.CSS_SELECTOR, css_selector)
-            return element.text.strip()
-        except:
-            return None
-
-    def _safe_extract_attribute(self, parent_element, css_selector: str, attribute: str) -> str:
-        try:
-            element = parent_element.find_element(By.CSS_SELECTOR, css_selector)
-            return element.get_attribute(attribute)
-        except:
             return None
 
 

@@ -1,4 +1,5 @@
 import os
+import random
 from typing import Optional
 from contextlib import contextmanager
 
@@ -19,6 +20,18 @@ class BrowserService:
         self._linkedin_email = os.getenv("LINKEDIN_EMAIL", "donuts5.2022@gmail.com")
         self._linkedin_password = os.getenv("LINKEDIN_PASSWORD", "scrape123")
 
+    def _human_like_type(self, element, text: str):
+        """Simulate human-like typing with realistic delays between keystrokes"""
+        element.clear()
+        for char in text:
+            element.send_keys(char)
+            sleep(random.uniform(0.2, 0.3))
+    
+    def _human_like_click(self, element):
+        """Simulate human-like clicking with realistic delay"""
+        sleep(random.uniform(0.5, 1.0)) 
+        element.click()
+
     def initialize(self):
         if self._driver is not None:
             logger_service.warning("Browser already initialized")
@@ -28,7 +41,7 @@ class BrowserService:
         chrome_options = Options()
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--headless")
+        # chrome_options.add_argument("--headless")
 
         self._driver = webdriver.Chrome(options=chrome_options)
         logger_service.info("Chrome browser initialized successfully")
@@ -46,14 +59,20 @@ class BrowserService:
             wait = WebDriverWait(self._driver, 10)
             wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
 
+            sleep(random.uniform(1.0, 2.0))
+
             username_field = wait.until(EC.presence_of_element_located((By.ID, "username")))
-            username_field.send_keys(self._linkedin_email)
+            self._human_like_type(username_field, self._linkedin_email)
+
+            sleep(random.uniform(0.5, 1.0))
 
             password_field = wait.until(EC.presence_of_element_located((By.ID, "password")))
-            password_field.send_keys(self._linkedin_password)
+            self._human_like_type(password_field, self._linkedin_password)
+
+            sleep(random.uniform(0.5, 1.0))
 
             sign_in_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.btn__primary--large.from__button--floating")))
-            sign_in_button.click()
+            self._human_like_click(sign_in_button)
 
             sleep(3)
 
@@ -102,6 +121,34 @@ class BrowserService:
     @property
     def is_logged_in(self) -> bool:
         return self._is_logged_in
+
+    def safe_extract_text(self, parent_element, css_selector: str) -> str:
+        try:
+            element = parent_element.find_element(By.CSS_SELECTOR, css_selector)
+            return element.text.strip()
+        except:
+            return None
+
+    def safe_extract_attribute(self, parent_element, css_selector: str, attribute: str) -> str:
+        try:
+            element = parent_element.find_element(By.CSS_SELECTOR, css_selector)
+            return element.get_attribute(attribute)
+        except:
+            return None
+
+    def safe_extract_text_from_driver(self, driver, css_selector: str) -> str:
+        try:
+            element = driver.find_element(By.CSS_SELECTOR, css_selector)
+            return element.text.strip()
+        except:
+            return None
+
+    def safe_extract_attribute_from_driver(self, driver, css_selector: str, attribute: str) -> str:
+        try:
+            element = driver.find_element(By.CSS_SELECTOR, css_selector)
+            return element.get_attribute(attribute)
+        except:
+            return None
 
 
 service = BrowserService()
