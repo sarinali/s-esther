@@ -11,20 +11,7 @@ interface ResultViewProps {
 }
 
 const ResultView: React.FC<ResultViewProps> = ({ onRestart, result, linkedinUrl }) => {
-  const extractNameFromUrl = (url: string): string => {
-    if (!url) return "Marc";
-    const match = url.match(/\/in\/([^\/]+)/);
-    if (match) {
-      const slug = match[1];
-      const name = slug.split('-').map(word =>
-        word.charAt(0).toUpperCase() + word.slice(1)
-      ).join(' ');
-      return name.split(' ')[0];
-    }
-    return "Marc";
-  };
-
-  const firstName = extractNameFromUrl(linkedinUrl || "");
+  const firstName = result?.prospect_name?.split(' ')[0] ?? "Marc";
   const scoreValue = result?.score ?? 79;
   const goodSignals = result?.good_signals ?? [
     "No relevant good signals",
