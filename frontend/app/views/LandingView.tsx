@@ -4,28 +4,34 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 interface LandingViewProps {
-  onButtonClick: (linkedinUrl: string) => void;
+  onButtonClick: (linkedinUrl: string, intent: string) => void;
 }
 
 const LandingView: React.FC<LandingViewProps> = ({ onButtonClick }) => {
   const [inputValue, setInputValue] = useState("");
+  const [intentValue, setIntentValue] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
+  const handleIntentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setIntentValue(e.target.value);
+  };
+
   const handleSearch = () => {
     if (inputValue.trim()) {
-      onButtonClick(inputValue.trim());
+      onButtonClick(inputValue.trim(), intentValue.trim());
     }
   };
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
       <div className="relative z-10 flex items-center justify-center h-full">
-        <motion.img
+        {/* <motion.img
           src="/esther_orange.png"
           alt="Esther Orange"
           className="absolute bottom-14 left-14 w-60 h-60 pointer-events-none select-none object-cover "
@@ -51,8 +57,8 @@ const LandingView: React.FC<LandingViewProps> = ({ onButtonClick }) => {
             ease: "easeInOut",
             delay: 1.5,
           }}
-        />
-        <div className="w-[800px] h-[800px] flex flex-col items-center justify-start text-center bg-[#FFE0D2] rounded-lg p-8">
+        /> */}
+        <div className="w-[800px] h-[800px] flex flex-col items-center justify-start text-center bg-[#FFE0D2]/40 rounded-md p-8 border-1 border-[#868686]">
           <h1 className="text-6xl font-semibold text-gray-900 mb-6 w-full text-left">
             Prospect, <br />
             <span className="font-light">With Your Eyes Closed.</span>
@@ -81,17 +87,33 @@ const LandingView: React.FC<LandingViewProps> = ({ onButtonClick }) => {
                 value={inputValue}
                 onChange={handleInputChange}
                 placeholder="LinkedIn URL..."
-                className="w-full h-16 font-light !text-md bg-white border-2 border-[#fff] rounded-sm mt-0 pl-12 pr-20"
+                className="w-full h-16 font-light !text-lg bg-white border-1 border-[#868686] rounded-sm mt-0 pl-12 pr-20"
               />
+            </div>
+          </div>
+          <div className="w-full flex flex-col mb-8">
+            <div className="p-2 flex flex-row justify-center items-center gap-2 max-w-[230px] bg-[#FFEFE8] border-2 border-b-0 border-dotted border-[#888888] rounded-sm font-light">
+              <img src="/target_icon.png" alt="cursor" className="w-4 h-4" />
+              WHAT'S YOUR INTENT?
+            </div>
+            <div className="relative w-full">
+            <Textarea
+              value={intentValue}
+              onInput={handleIntentChange}
+              placeholder="Evaluate whether their company would like to buy a developer tool that does automated PR reviews targetted towards engineering heavy organizations..."
+              className="w-full h-48 font-light !text-lg bg-white border-1 border-[#868686] focus:border-[#868686] focus:ring-0 focus-visible:border-[#868686] focus-visible:ring-0 focus-visible:ring-offset-0 rounded-sm mt-0 p-4 justify-start items-start align-top"
+            />
+            </div>
+            <div className="w-full flex justify-end mt-2">
               <Button
                 onClick={handleSearch}
                 size="sm"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-12 px-8 rounded-[4px]"
+                className="h-12 px-8 w-32 rounded-[4px]"
               >
                 Search
               </Button>
             </div>
-          </div>
+            </div>
         </div>
       </div>
     </div>
