@@ -7,3 +7,6 @@ pydantic
 sse-starlette
 selenium
 apify-client
+langchain
+langchain-community
+langchain_openai
