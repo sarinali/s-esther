@@ -111,10 +111,11 @@ class ToolCallingService:
 
                     if tool_name == "finish":
                         should_finish = True
+                        research_summary = result.get("summary", "")
 
                 if should_finish:
-                    final_summary = await self._generate_final_summary(messages)
-                    yield f"data: {json.dumps({'type': 'final_result', 'summary': final_summary})}\n\n"
+                    final_assessment = await self._generate_final_assessment(research_summary, user_goal, messages)
+                    yield f"data: {json.dumps({'type': 'final_result', 'assessment': final_assessment})}\n\n"
                     break
 
             else:
@@ -123,17 +124,37 @@ class ToolCallingService:
         except Exception as e:
             yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
 
-    async def _generate_final_summary(self, messages: List[Dict[str, Any]]) -> str:
-        context_summary = self._extract_context_summary(messages)
+    async def _generate_final_assessment(self, research_summary: str, user_goal: str, message_context: str) -> Dict[str, Any]:
+        max_retries = 3
 
-        summary_messages = prompt_service.build_final_summary_prompt(context_summary)
+        for attempt in range(max_retries):
+            scoring_result = await asyncio.to_thread(
+                openai_service.score_prospect,
+                research_summary,
+                user_goal,
+                message_context
+            )
 
-        final_summary = await openai_service.create_chat_completion_async(
-            messages=summary_messages,
-            temperature=0.3
-        )
+            try:
+                assessment = json.loads(scoring_result)
 
-        return final_summary
+                if all(key in assessment for key in ["good_signals", "bad_signals", "score", "reasoning"]):
+                    return assessment
+                else:
+                    if attempt < max_retries - 1:
+                        continue
+
+            except json.JSONDecodeError:
+                if attempt < max_retries - 1:
+                    continue
+
+        return {
+            "good_signals": [],
+            "bad_signals": [],
+            "score": 50,
+            "reasoning": "Error parsing assessment after 3 retries",
+            "raw_response": scoring_result
+        }
 
     def _extract_context_summary(self, messages: List[Dict[str, Any]]) -> str:
         context_parts = []

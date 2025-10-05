@@ -93,5 +93,31 @@ class OpenAIService:
 
         return response.choices[0].message.content
 
+    def score_prospect(
+        self,
+        research_summary: str,
+        user_goal: str,
+        message_context: List[Dict[str, str]]
+    ) -> str:
+        from constants.prompts import SCORING_SYSTEM_PROMPT
+
+        messages = [
+            {"role": "system", "content": SCORING_SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": f"User's Product/Goal: {user_goal}\n\nResearch Findings:\n{research_summary}"
+            }
+        ]
+
+        messages.extend(message_context)
+
+        response = self.client.chat.completions.create(
+            model="o3-mini",
+            messages=messages,
+            reasoning_effort="medium"
+        )
+
+        return response.choices[0].message.content
+
 
 service = OpenAIService()
