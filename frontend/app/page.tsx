@@ -23,7 +23,7 @@ export default function Home() {
   const [prospectingResult, setProspectingResult] = useState<any>(null);
   const currentStepRef = React.useRef<{ title: string; description: string } | null>(null);
 
-  const handleLandingButtonClick = async (url: string) => {
+  const handleLandingButtonClick = async (url: string, intent: string) => {
     setLinkedinUrl(url);
     setCurrentPage("loading");
     setSteps([]);
@@ -39,7 +39,8 @@ export default function Home() {
         },
         body: JSON.stringify({
           profile_url: url,
-          intent: "does this person have intent of buying a dev tool",
+          intent: intent,
+          dry_run: true,
         }),
       });
 

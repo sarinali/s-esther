@@ -4,6 +4,7 @@ from typing import AsyncGenerator, Dict, Any, List
 
 from constants.prompts import AGENT_SYSTEM_PROMPT
 from constants.tool_metadata import TOOL_METADATA
+from services.logger_service import logger_service
 from services.openai_service import service as openai_service
 from services.prompt_generator_service import service as prompt_service
 from services.tool_registry_service import service as tool_registry_service
@@ -35,12 +36,19 @@ class ToolCallingService:
             "search_company_news": search_company_news,
             "search_person_news": search_person_news
         }
+        self._prospect_name = None
 
     async def execute_with_streaming(
         self,
         user_goal: str,
-        linkedin_profile_url: str
+        linkedin_profile_url: str,
+        dry_run: bool = False
     ) -> AsyncGenerator[str, None]:
+        if dry_run:
+            async for event in self._execute_dry_run(user_goal, linkedin_profile_url):
+                yield event
+            return
+
         messages = [
             {"role": "system", "content": AGENT_SYSTEM_PROMPT},
             {"role": "user", "content": prompt_service.build_agent_context(user_goal, linkedin_profile_url)}
@@ -121,6 +129,7 @@ class ToolCallingService:
 
                 if should_finish:
                     final_assessment = await self._generate_final_assessment(research_summary, user_goal, messages)
+                    final_assessment["prospect_name"] = await self._get_prospect_name(messages)
                     yield f"data: {json.dumps({'type': 'final_result', 'assessment': final_assessment})}\n\n"
                     break
 
@@ -129,6 +138,78 @@ class ToolCallingService:
 
         except Exception as e:
             yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+
+    async def _execute_dry_run(self, user_goal: str, linkedin_profile_url: str) -> AsyncGenerator[str, None]:
+        yield f"data: {json.dumps({'type': 'started', 'message': 'Agent execution started (DRY RUN MODE)'})}\n\n"
+
+        await asyncio.sleep(0.5)
+
+        yield f"data: {json.dumps({'type': 'iteration', 'iteration': 1})}\n\n"
+
+        yield f"data: {json.dumps({'type': 'tool_started', 'tool_name': 'get_linkedin_profile_data', 'arguments': {'profile_url': linkedin_profile_url}})}\n\n"
+        await asyncio.sleep(1)
+
+        mock_profile_data = {
+            "name": "John Doe",
+            "headline": "Senior Software Engineer at Tech Corp",
+            "location": "San Francisco, CA",
+            "about": "Passionate about building scalable systems and mentoring junior developers.",
+            "experience": [
+                {"title": "Senior Software Engineer", "company": "Tech Corp", "duration": "2020 - Present"},
+                {"title": "Software Engineer", "company": "Startup Inc", "duration": "2018 - 2020"}
+            ]
+        }
+        yield f"data: {json.dumps({'type': 'tool_completed', 'tool_name': 'get_linkedin_profile_data', 'result': mock_profile_data})}\n\n"
+
+        yield f"data: {json.dumps({'type': 'iteration', 'iteration': 2})}\n\n"
+
+        yield f"data: {json.dumps({'type': 'tool_started', 'tool_name': 'search_web', 'arguments': {'query': 'Tech Corp recent news'}})}\n\n"
+        await asyncio.sleep(1)
+
+        mock_search_results = {
+            "results": [
+                {"title": "Tech Corp raises $50M Series B", "url": "https://example.com/news1", "snippet": "Tech Corp announced a $50M Series B funding round..."},
+                {"title": "Tech Corp launches new product", "url": "https://example.com/news2", "snippet": "The company unveiled its latest innovation..."}
+            ]
+        }
+        yield f"data: {json.dumps({'type': 'tool_completed', 'tool_name': 'search_web', 'result': mock_search_results})}\n\n"
+
+        yield f"data: {json.dumps({'type': 'iteration', 'iteration': 3})}\n\n"
+
+        yield f"data: {json.dumps({'type': 'tool_started', 'tool_name': 'finish', 'arguments': {'summary': 'Completed research on prospect'}})}\n\n"
+        await asyncio.sleep(0.5)
+
+        mock_finish_result = {
+            "summary": "John Doe is a Senior Software Engineer at Tech Corp with 6+ years of experience. Tech Corp recently raised $50M and launched a new product, indicating strong growth."
+        }
+        yield f"data: {json.dumps({'type': 'tool_completed', 'tool_name': 'finish', 'result': mock_finish_result})}\n\n"
+
+        mock_assessment = {
+            "prospect_name": "John Doe",
+            "good_signals": [
+                "Works at well-funded company",
+                "Senior position with leadership experience",
+                "Active in technology space"
+            ],
+            "bad_signals": [
+                "No clear indication of budget authority"
+            ],
+            "score": 75,
+            "reasoning": "Strong technical background at a growing company. Good fit for technical products or services."
+        }
+
+        yield f"data: {json.dumps({'type': 'final_result', 'assessment': mock_assessment})}\n\n"
+
+    async def _get_prospect_name(self, messages: List[Dict[str, Any]]) -> str:
+        try:
+            response = openai_service.analyze_with_reasoning(
+                prompt="What is the name of the prospect? Only return the name, no other text.",
+                context=self._extract_context_summary(messages)
+                )
+            return response
+        except Exception as e:
+            logger_service.error(f"Error getting prospect name: {e}")
+            return "Unknown"
 
     async def _generate_final_assessment(self, research_summary: str, user_goal: str, message_context: str) -> Dict[str, Any]:
         max_retries = 3

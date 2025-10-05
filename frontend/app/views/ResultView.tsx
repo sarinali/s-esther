@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import CountUp from "@/components/CountUp";
 
 interface ResultViewProps {
   onRestart?: () => void;
@@ -12,7 +13,7 @@ interface ResultViewProps {
 
 const ResultView: React.FC<ResultViewProps> = ({ onRestart, result, linkedinUrl }) => {
   const firstName = result?.prospect_name?.split(' ')[0] ?? "Marc";
-  const scoreValue = result?.score ?? 79;
+  const scoreValue: number = typeof result?.score === 'number' ? result.score : 79;
   const goodSignals = result?.good_signals ?? [
     "No relevant good signals",
   ];
@@ -21,26 +22,15 @@ const ResultView: React.FC<ResultViewProps> = ({ onRestart, result, linkedinUrl 
   ];
   const reasoning = result?.reasoning ?? "";
 
-  const count = useMotionValue(0);
-  const rounded = useTransform(count, (latest) => Math.round(latest));
-
-  useEffect(() => {
-    const controls = animate(count, scoreValue, {
-      duration: 2,
-      ease: "easeOut",
-    });
-    return controls.stop;
-  }, [count, scoreValue]);
-
   return (
     <div className="relative w-full h-screen overflow-hidden">
       <div className="relative z-10 flex items-center justify-center h-full">
        
         
-        <div className="w-[800px] h-[800px] flex flex-col items-center justify-start text-center bg-[#ECFFD2] rounded-lg p-8 overflow-y-auto relative">
+        <div className="w-[800px] h-[800px] flex flex-col items-center justify-start text-center bg-[#ECFFD2]/40 rounded-md p-8 overflow-y-auto relative border-1 border-[#868686]">
           <h1 className="text-6xl text-gray-900 mb-6 w-full text-left font-light">
             <span className="font-semibold">{firstName},</span>
-            <br /> At A Glance
+            <br /> At A Glance.
           </h1>
           <p className="text-xl text-[#7a7a7a] mb-12 w-full text-left font-light">
             Prospecting scores are guides, not guarantees. They help you
@@ -52,7 +42,7 @@ const ResultView: React.FC<ResultViewProps> = ({ onRestart, result, linkedinUrl 
               Score
             </h2>
             <motion.h2 className="text-5xl font-semibold text-gray-800 mb-4">
-              {rounded}
+              <CountUp to={scoreValue} />
             </motion.h2>
           </div>
 

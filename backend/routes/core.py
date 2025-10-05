@@ -15,7 +15,8 @@ async def start_prospecting(payload: StartProspectingPayload = Body(...)):
         return StreamingResponse(
             tool_calling_service.execute_with_streaming(
                 user_goal=payload.intent,
-                linkedin_profile_url=payload.profile_url
+                linkedin_profile_url=payload.profile_url,
+                dry_run=payload.dry_run
             ),
             media_type="text/event-stream"
         )

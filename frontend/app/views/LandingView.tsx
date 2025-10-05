@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 interface LandingViewProps {
-  onButtonClick: (linkedinUrl: string, intent: string) => void;
+  onButtonClick: (linkedinUrl: string, intent: string, dry_run: boolean) => void;
 }
 
 const LandingView: React.FC<LandingViewProps> = ({ onButtonClick }) => {
@@ -24,40 +24,13 @@ const LandingView: React.FC<LandingViewProps> = ({ onButtonClick }) => {
 
   const handleSearch = () => {
     if (inputValue.trim()) {
-      onButtonClick(inputValue.trim(), intentValue.trim());
+      onButtonClick(inputValue.trim(), intentValue.trim(), false);
     }
   };
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
       <div className="relative z-10 flex items-center justify-center h-full">
-        {/* <motion.img
-          src="/esther_orange.png"
-          alt="Esther Orange"
-          className="absolute bottom-14 left-14 w-60 h-60 pointer-events-none select-none object-cover "
-          style={{ zIndex: 1 }}
-          animate={{ rotate: [0, 15, -15, 0] }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            repeatType: "reverse",
-            ease: "easeInOut",
-          }}
-        />
-        <motion.img
-          src="/esther_pink.png"
-          alt="Esther Pink"
-          className="absolute top-14 right-14 w-80 h-80 pointer-events-none select-none object-cover"
-          style={{ zIndex: 1 }}
-          animate={{ rotate: [0, -12, 12, 0] }}
-          transition={{
-            duration: 7,
-            repeat: Infinity,
-            repeatType: "reverse",
-            ease: "easeInOut",
-            delay: 1.5,
-          }}
-        /> */}
         <div className="w-[800px] h-[800px] flex flex-col items-center justify-start text-center bg-[#FFE0D2]/40 rounded-md p-8 border-1 border-[#868686]">
           <h1 className="text-6xl font-semibold text-gray-900 mb-6 w-full text-left">
             Prospect, <br />
