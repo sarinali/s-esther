@@ -73,5 +73,25 @@ class OpenAIService:
 
         return response
 
+    def analyze_with_reasoning(
+        self,
+        prompt: str,
+        context: str
+    ) -> str:
+        messages = [
+            {
+                "role": "user",
+                "content": f"{prompt}\n\nContext:\n{context}"
+            }
+        ]
+
+        response = self.client.chat.completions.create(
+            model="o3-mini",
+            messages=messages,
+            reasoning_effort="medium"
+        )
+
+        return response.choices[0].message.content
+
 
 service = OpenAIService()

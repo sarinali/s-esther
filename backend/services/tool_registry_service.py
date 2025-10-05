@@ -2,8 +2,17 @@ from typing import List, Dict, Any
 
 from langchain_core.tools import StructuredTool
 
+from tools.analyze_with_llm import create_analyze_with_llm_tool
+from tools.browse_web import create_browse_web_tool
 from tools.finish import create_finish_tool
+from tools.get_linkedin_company_details import create_linkedin_company_details_tool
+from tools.get_linkedin_company_posts import create_linkedin_company_posts_tool
 from tools.get_linkedin_profile_data import create_linkedin_profile_tool
+from tools.get_linkedin_profile_posts import create_linkedin_profile_posts_tool
+from tools.get_linkedin_profile_reactions import create_linkedin_profile_reactions_tool
+from tools.search_company_news import create_search_company_news_tool
+from tools.search_person_news import create_search_person_news_tool
+from tools.search_web import create_search_web_tool
 
 
 class ToolRegistryService:
@@ -14,7 +23,16 @@ class ToolRegistryService:
         if self._tools is None:
             self._tools = [
                 create_finish_tool(),
-                create_linkedin_profile_tool()
+                create_linkedin_profile_tool(),
+                create_linkedin_profile_posts_tool(),
+                create_linkedin_profile_reactions_tool(),
+                create_linkedin_company_details_tool(),
+                create_linkedin_company_posts_tool(),
+                create_browse_web_tool(),
+                create_search_web_tool(),
+                create_search_company_news_tool(),
+                create_search_person_news_tool(),
+                create_analyze_with_llm_tool()
             ]
 
         return self._tools

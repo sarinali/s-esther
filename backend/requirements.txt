@@ -10,3 +10,4 @@ apify-client
 langchain
 langchain-community
 langchain_openai
+beautifulsoup4

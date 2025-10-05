@@ -8,14 +8,31 @@ from services.prompt_generator_service import service as prompt_service
 from services.tool_registry_service import service as tool_registry_service
 from tools.finish import finish_execution
 from tools.get_linkedin_profile_data import get_linkedin_profile_data
-
+from tools.get_linkedin_profile_posts import get_linkedin_profile_posts
+from tools.get_linkedin_profile_reactions import get_linkedin_profile_reactions
+from tools.get_linkedin_company_details import get_linkedin_company_details
+from tools.get_linkedin_company_posts import get_linkedin_company_posts
+from tools.browse_web import browse_web
+from tools.analyze_with_llm import analyze_with_llm
+from tools.search_web import search_web
+from tools.search_company_news import search_company_news
+from tools.search_person_news import search_person_news
 
 class ToolCallingService:
     def __init__(self):
         self.max_iterations = 10
         self._tool_map = {
             "finish": finish_execution,
-            "get_linkedin_profile_data": get_linkedin_profile_data
+            "get_linkedin_profile_data": get_linkedin_profile_data,
+            "get_linkedin_profile_posts": get_linkedin_profile_posts,
+            "get_linkedin_profile_reactions": get_linkedin_profile_reactions,
+            "get_linkedin_company_details": get_linkedin_company_details,
+            "get_linkedin_company_posts": get_linkedin_company_posts,
+            "browse_web": browse_web,
+            "analyze_with_llm": analyze_with_llm,
+            "search_web": search_web,
+            "search_company_news": search_company_news,
+            "search_person_news": search_person_news
         }
 
     async def execute_with_streaming(
