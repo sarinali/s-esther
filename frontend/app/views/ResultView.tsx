@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 
 interface ResultViewProps {
   onRestart?: () => void;
+  result?: any;
 }
 
-const ResultView: React.FC<ResultViewProps> = ({ onRestart }) => {
+const ResultView: React.FC<ResultViewProps> = ({ onRestart, result }) => {
   const scoreData = {
     value: 79,
     label: "Score",
@@ -62,8 +63,16 @@ const ResultView: React.FC<ResultViewProps> = ({ onRestart }) => {
           </h1>
           <p className="text-xl text-[#7a7a7a] mb-12 w-full text-left font-light">
             Prospecting scores are guides, not guarantees. They help you
-            prioritize, but don’t assume a high score means they’ll buy.
+            prioritize, but don't assume a high score means they'll buy.
           </p>
+
+          {result && (
+            <div className="w-full mb-6 p-4 bg-white rounded-lg">
+              <p className="text-sm text-gray-600 font-mono whitespace-pre-wrap break-words">
+                {JSON.stringify(result, null, 2)}
+              </p>
+            </div>
+          )}
           <div className="flex w-full flex-col items-start justify-start">
             <h2 className="text-lg font-semibold text-gray-800 mb-1">
               {scoreData.label}
