@@ -8,7 +8,8 @@ import ResultView from "./views/ResultView";
 import DottedGrid from "./components/DottedGrid";
 
 type SSEStep = {
-  message: string;
+  title: string;
+  description: string;
   completed: boolean;
 };
 
@@ -18,14 +19,16 @@ export default function Home() {
   >("landing");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [steps, setSteps] = useState<SSEStep[]>([]);
-  const [currentStepMessage, setCurrentStepMessage] = useState("");
+  const [currentStep, setCurrentStep] = useState<{ title: string; description: string } | null>(null);
   const [prospectingResult, setProspectingResult] = useState<any>(null);
+  const currentStepRef = React.useRef<{ title: string; description: string } | null>(null);
 
   const handleLandingButtonClick = async (url: string) => {
     setLinkedinUrl(url);
     setCurrentPage("loading");
     setSteps([]);
-    setCurrentStepMessage("");
+    setCurrentStep(null);
+    currentStepRef.current = null;
     setProspectingResult(null);
 
     try {
@@ -64,19 +67,35 @@ export default function Home() {
               const jsonData = JSON.parse(line.substring(6));
 
               if (jsonData.type === "tool_started") {
-                const message = `${jsonData.tool_name}`;
-                setCurrentStepMessage(message);
+                const stepData = {
+                  title: jsonData.tool_title,
+                  description: jsonData.tool_description
+                };
+                currentStepRef.current = stepData;
+                setCurrentStep(stepData);
               } else if (jsonData.type === "tool_completed") {
-                setSteps(prev => [...prev, { message: currentStepMessage || jsonData.tool_name, completed: true }]);
-                setCurrentStepMessage("");
+                const stepData = currentStepRef.current;
+                if (stepData) {
+                  setSteps(prev => [...prev, {
+                    title: stepData.title,
+                    description: stepData.description,
+                    completed: true
+                  }]);
+                  currentStepRef.current = null;
+                  setCurrentStep(null);
+                }
               } else if (jsonData.type === "final_result") {
-                setProspectingResult(jsonData.summary);
+                setProspectingResult(jsonData.assessment);
                 setTimeout(() => {
                   setCurrentPage("result");
                 }, 1000);
               } else if (jsonData.type === "error") {
                 console.error("Error from API:", jsonData.message);
-                setSteps(prev => [...prev, { message: `Error: ${jsonData.message}`, completed: true }]);
+                setSteps(prev => [...prev, {
+                  title: "Error",
+                  description: jsonData.message,
+                  completed: true
+                }]);
               }
             } catch (e) {
               console.error("Failed to parse JSON:", e);
@@ -86,7 +105,11 @@ export default function Home() {
       }
     } catch (error) {
       console.error("Failed to connect to API:", error);
-      setSteps(prev => [...prev, { message: "Failed to connect to backend", completed: true }]);
+      setSteps(prev => [...prev, {
+        title: "Connection Error",
+        description: "Failed to connect to backend",
+        completed: true
+      }]);
     }
   };
 
@@ -94,7 +117,8 @@ export default function Home() {
     setCurrentPage("landing");
     setLinkedinUrl("");
     setSteps([]);
-    setCurrentStepMessage("");
+    setCurrentStep(null);
+    currentStepRef.current = null;
     setProspectingResult(null);
   };
 
@@ -137,12 +161,12 @@ export default function Home() {
 
           {/* Loading page view */}
           <div className="w-screen h-full">
-            <LoadingView steps={steps} currentStepMessage={currentStepMessage} />
+            <LoadingView steps={steps} currentStep={currentStep} />
           </div>
 
           {/* Result page view */}
           <div className="w-screen h-full">
-            <ResultView onRestart={handleRestart} result={prospectingResult} />
+            <ResultView onRestart={handleRestart} result={prospectingResult} linkedinUrl={linkedinUrl} />
           </div>
         </div>
       </motion.div>

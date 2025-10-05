@@ -3,6 +3,7 @@ import json
 from typing import AsyncGenerator, Dict, Any, List
 
 from constants.prompts import AGENT_SYSTEM_PROMPT
+from constants.tool_metadata import TOOL_METADATA
 from services.openai_service import service as openai_service
 from services.prompt_generator_service import service as prompt_service
 from services.tool_registry_service import service as tool_registry_service
@@ -86,7 +87,12 @@ class ToolCallingService:
                     tool_name = tool_call.function.name
                     tool_args = json.loads(tool_call.function.arguments)
 
-                    yield f"data: {json.dumps({'type': 'tool_started', 'tool_name': tool_name, 'arguments': tool_args})}\n\n"
+                    tool_metadata = TOOL_METADATA.get(tool_name, {
+                        "title": tool_name.replace("_", " ").title(),
+                        "description": f"Executing {tool_name}"
+                    })
+
+                    yield f"data: {json.dumps({'type': 'tool_started', 'tool_name': tool_name, 'tool_title': tool_metadata['title'], 'tool_description': tool_metadata['description'], 'arguments': tool_args})}\n\n"
 
                     if tool_name not in self._tool_map:
                         error_result = {"error": f"Unknown tool: {tool_name}"}

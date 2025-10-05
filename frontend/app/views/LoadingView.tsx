@@ -5,16 +5,20 @@ import { motion } from "framer-motion";
 import { TextShimmer } from "@/components/motion-primitives/text-shimmer";
 
 type SSEStep = {
-  message: string;
+  title: string;
+  description: string;
   completed: boolean;
 };
 
 interface LoadingViewProps {
   steps: SSEStep[];
-  currentStepMessage: string;
+  currentStep: {
+    title: string;
+    description: string;
+  } | null;
 }
 
-const LoadingView: React.FC<LoadingViewProps> = ({ steps, currentStepMessage }) => {
+const LoadingView: React.FC<LoadingViewProps> = ({ steps, currentStep }) => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
@@ -26,13 +30,13 @@ const LoadingView: React.FC<LoadingViewProps> = ({ steps, currentStepMessage }) 
 
           <div className="flex flex-col gap-4 w-full mt-8">
             {steps.map((step, index) => (
-              <div key={index} className="flex items-center gap-4">
-                <div className="w-6 h-6 flex items-center justify-center">
+              <div key={index} className="flex items-start gap-4">
+                <div className="w-6 h-6 flex items-center justify-center mt-1">
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.3 }}
-                    className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center"
+                    className="w-5 h-5 bg-black rounded-full flex items-center justify-center"
                   >
                     <svg
                       className="w-4 h-4 text-white"
@@ -47,15 +51,21 @@ const LoadingView: React.FC<LoadingViewProps> = ({ steps, currentStepMessage }) 
                     </svg>
                   </motion.div>
                 </div>
-                <span className="text-lg text-gray-900">{step.message}</span>
+                <div className="flex flex-col items-start">
+                  <span className="text-lg font-semibold text-gray-900">{step.title}</span>
+                  <span className="text-sm text-gray-600">{step.description}</span>
+                </div>
               </div>
             ))}
-            {currentStepMessage && (
-              <div className="flex items-center gap-4">
-                <div className="w-6 h-6 flex items-center justify-center" />
-                <TextShimmer as="span" className="text-lg " duration={1.5}>
-                  {currentStepMessage}
-                </TextShimmer>
+            {currentStep && (
+              <div className="flex items-start gap-4">
+                <div className="w-6 h-6 flex items-center justify-center mt-1" />
+                <div className="flex flex-col items-start">
+                  <TextShimmer as="span" className="text-lg font-semibold" duration={1.5}>
+                    {currentStep.title}
+                  </TextShimmer>
+                  <span className="text-sm text-gray-600">{currentStep.description}</span>
+                </div>
               </div>
             )}
           </div>
