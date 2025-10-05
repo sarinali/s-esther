@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 from config import config
+from routes.core import core_router
 from routes.search import search_router
 from services.logger_service import logger_service
 
@@ -25,6 +26,7 @@ app = FastAPI(
 )
 
 app.include_router(search_router, prefix="/search", tags=["search"])
+app.include_router(core_router, prefix="/core", tags=["core"])
 
 
 @app.get("/health")
