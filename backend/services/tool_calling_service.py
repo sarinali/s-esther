@@ -82,7 +82,7 @@ class ToolCallingService:
                         continue
 
                     tool_func = self._tool_map[tool_name]
-                    result = tool_func(**tool_args)
+                    result = await asyncio.to_thread(tool_func, **tool_args)
 
                     yield f"data: {json.dumps({'type': 'tool_completed', 'tool_name': tool_name, 'result': result})}\n\n"
 
