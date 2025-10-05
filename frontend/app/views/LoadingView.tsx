@@ -19,7 +19,7 @@ const LoadingView: React.FC<LoadingViewProps> = ({ steps, currentStepMessage }) 
   return (
     <div className="relative w-full h-screen overflow-hidden">
       <div className="relative z-10 flex items-center justify-center h-full">
-        <div className="w-[800px] h-[800px] flex flex-col items-center justify-start text-center bg-[#E8E6FF] rounded-lg p-8">
+        <div className="w-[800px] h-[800px] flex flex-col items-center justify-start text-center bg-[#E8E6FF]/40 border-1 border-[#868686] rounded-md p-8">
           <h1 className="text-6xl text-gray-900 mb-6 w-full text-left font-light">
             Watch The <span className="font-semibold">Magic</span> Unfold
           </h1>

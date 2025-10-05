@@ -56,7 +56,7 @@ const ResultView: React.FC<ResultViewProps> = ({ onRestart, result }) => {
           }}
         />
         
-        <div className="w-[800px] h-[800px] flex flex-col items-center justify-start text-center bg-[#ECFFD2] rounded-lg p-8">
+        <div className="w-[800px] h-[800px] flex flex-col items-center justify-start text-center bg-[#ECFFD2]/40 rounded-md p-8 border-1 border-[#868686]">
           <h1 className="text-6xl text-gray-900 mb-6 w-full text-left font-light">
             <span className="font-semibold">Marc,</span>
             <br /> At A Glance
