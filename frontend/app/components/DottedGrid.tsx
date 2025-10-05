@@ -8,7 +8,7 @@ const DottedGrid: React.FC<DottedGridProps> = ({ className = "" }) => {
   return (
     <div className={`absolute inset-0 overflow-hidden bg-white ${className}`}>
       <div
-        className="w-full h-full opacity-30"
+        className="w-full h-full opacity-10"
         style={{
           backgroundImage: `
             radial-gradient(circle, #000 1.5px, transparent 1px)
