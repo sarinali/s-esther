@@ -15,7 +15,7 @@ const LoadingView: React.FC<LoadingViewProps> = ({ onComplete }) => {
     "Got LinkedIn Portfolio",
     "Analyzing User's Likes",
     "Evaluating User's Comments",
-    "Investigating User's Postssss",
+    "Investigating User's Posts",
   ];
 
   useEffect(() => {
