@@ -5,14 +5,14 @@ from pydantic import BaseModel, Field
 
 
 class FinishInput(BaseModel):
-    summary: str = Field(description="A summary of what was accomplished in this agent execution")
+    summary: str = Field(description="Comprehensive summary of all research findings, including key insights from LinkedIn and web sources")
 
 
 def finish_execution(summary: str) -> Dict[str, Any]:
     return {
         "status": "completed",
-        "summary": summary,
-        "action": "finish"
+        "action": "finish",
+        "summary": summary
     }
 
 
@@ -20,6 +20,6 @@ def create_finish_tool() -> StructuredTool:
     return StructuredTool.from_function(
         func=finish_execution,
         name="finish",
-        description="Indicate that the task is complete and return a summary of what was accomplished. Use this when you have finished all required actions.",
+        description="Complete the research task with a comprehensive summary of findings. Include all relevant information discovered from LinkedIn and web sources.",
         args_schema=FinishInput
     )
