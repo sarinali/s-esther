@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,7 +11,7 @@ interface LandingViewProps {
 
 const LandingView: React.FC<LandingViewProps> = ({ onButtonClick }) => {
   const [inputValue, setInputValue] = useState("");
-  const [intentValue, setIntentValue] = useState("");
+  const [intentValue, setIntentValue] = useState("Evaluate whether their company would like to buy a developer tool that does automated PR reviews targetted towards engineering heavy organizations...");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);

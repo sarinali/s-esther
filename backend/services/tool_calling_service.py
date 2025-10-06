@@ -146,7 +146,11 @@ class ToolCallingService:
 
         yield f"data: {json.dumps({'type': 'iteration', 'iteration': 1})}\n\n"
 
-        yield f"data: {json.dumps({'type': 'tool_started', 'tool_name': 'get_linkedin_profile_data', 'arguments': {'profile_url': linkedin_profile_url}})}\n\n"
+        tool_metadata = TOOL_METADATA.get('get_linkedin_profile_data', {
+            "title": "Get LinkedIn Profile Data",
+            "description": "Retrieving LinkedIn profile information"
+        })
+        yield f"data: {json.dumps({'type': 'tool_started', 'tool_name': 'get_linkedin_profile_data', 'tool_title': tool_metadata['title'], 'tool_description': tool_metadata['description'], 'arguments': {'profile_url': linkedin_profile_url}})}\n\n"
         await asyncio.sleep(1)
 
         mock_profile_data = {
@@ -163,7 +167,11 @@ class ToolCallingService:
 
         yield f"data: {json.dumps({'type': 'iteration', 'iteration': 2})}\n\n"
 
-        yield f"data: {json.dumps({'type': 'tool_started', 'tool_name': 'search_web', 'arguments': {'query': 'Tech Corp recent news'}})}\n\n"
+        tool_metadata = TOOL_METADATA.get('search_web', {
+            "title": "Search Web",
+            "description": "Searching the web for information"
+        })
+        yield f"data: {json.dumps({'type': 'tool_started', 'tool_name': 'search_web', 'tool_title': tool_metadata['title'], 'tool_description': tool_metadata['description'], 'arguments': {'query': 'Tech Corp recent news'}})}\n\n"
         await asyncio.sleep(1)
 
         mock_search_results = {
@@ -176,7 +184,11 @@ class ToolCallingService:
 
         yield f"data: {json.dumps({'type': 'iteration', 'iteration': 3})}\n\n"
 
-        yield f"data: {json.dumps({'type': 'tool_started', 'tool_name': 'finish', 'arguments': {'summary': 'Completed research on prospect'}})}\n\n"
+        tool_metadata = TOOL_METADATA.get('finish', {
+            "title": "Finish",
+            "description": "Completing research"
+        })
+        yield f"data: {json.dumps({'type': 'tool_started', 'tool_name': 'finish', 'tool_title': tool_metadata['title'], 'tool_description': tool_metadata['description'], 'arguments': {'summary': 'Completed research on prospect'}})}\n\n"
         await asyncio.sleep(0.5)
 
         mock_finish_result = {

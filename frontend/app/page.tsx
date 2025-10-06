@@ -26,7 +26,11 @@ export default function Home() {
   const handleLandingButtonClick = async (url: string, intent: string) => {
     setLinkedinUrl(url);
     setCurrentPage("loading");
-    setSteps([]);
+    setSteps([{
+      title: "Researching",
+      description: "Starting your prospecting journey...",
+      completed: true
+    }]);
     setCurrentStep(null);
     currentStepRef.current = null;
     setProspectingResult(null);
@@ -40,7 +44,6 @@ export default function Home() {
         body: JSON.stringify({
           profile_url: url,
           intent: intent,
-          dry_run: true,
         }),
       });
 
