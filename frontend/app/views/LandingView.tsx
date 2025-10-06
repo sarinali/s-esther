@@ -1,9 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface LandingViewProps {
   onButtonClick: (linkedinUrl: string, intent: string, dry_run: boolean) => void;
@@ -39,9 +45,26 @@ const LandingView: React.FC<LandingViewProps> = ({ onButtonClick }) => {
           <p className="text-xl text-[#7a7a7a] mb-12 w-full text-left font-light">
             s-esther is the{" "}
             <span className="font-medium">prospecting agent</span> that
-            evaluates your lead's intent completely autonomously saving you{" "}
-            <span className="font-medium">35% of your time</span> on research
-            and intent validation.
+            evaluates your lead&apos;s intent completely autonomously giving a {" "}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="font-medium cursor-pointer underline decoration-dotted">
+                    62.5% reduction
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent className="bg-white text-gray-900 border border-gray-300 p-0 border-0 bg-transparent">
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="bg-white text-gray-900 border border-gray-300 rounded-md px-3 py-1.5 text-xs shadow-lg"
+                  >
+                    <p>From 4 minutes → 1.5 minutes!</p>
+                  </motion.div>
+                </TooltipContent>
+              </Tooltip>{" "}
+            in research and intent validation.
           </p>
 
           <div className="w-full flex flex-col mb-8">
