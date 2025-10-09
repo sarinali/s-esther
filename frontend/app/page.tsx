@@ -36,7 +36,7 @@ export default function Home() {
     setProspectingResult(null);
 
     try {
-      const response = await fetch("http://localhost:8000/core/v1/start_prospecting", {
+      const response = await fetch("https://s-esther-production.up.railway.app/core/v1/start_prospecting", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
