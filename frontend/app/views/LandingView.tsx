@@ -17,7 +17,7 @@ interface LandingViewProps {
 
 const LandingView: React.FC<LandingViewProps> = ({ onButtonClick }) => {
   const [inputValue, setInputValue] = useState("");
-  const [intentValue, setIntentValue] = useState("Evaluate whether their company would like to buy a developer tool that does automated PR reviews targetted towards engineering heavy organizations...");
+  const [intentValue, setIntentValue] = useState("Evaluate whether their company would like to buy a developer tool that does automated PR reviews targeted towards engineering heavy organizations...");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -96,7 +96,7 @@ const LandingView: React.FC<LandingViewProps> = ({ onButtonClick }) => {
             <Textarea
               value={intentValue}
               onInput={handleIntentChange}
-              placeholder="Evaluate whether their company would like to buy a developer tool that does automated PR reviews targetted towards engineering heavy organizations..."
+              placeholder="Evaluate whether their company would like to buy a developer tool that does automated PR reviews targeted towards engineering heavy organizations..."
               className="w-full h-48 font-light !text-lg bg-white border-1 border-[#868686] focus:border-[#868686] focus:ring-0 focus-visible:border-[#868686] focus-visible:ring-0 focus-visible:ring-offset-0 rounded-sm mt-0 p-4 justify-start items-start align-top"
             />
             </div>
