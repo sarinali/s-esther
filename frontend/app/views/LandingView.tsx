@@ -89,7 +89,7 @@ const LandingView: React.FC<LandingViewProps> = ({ onButtonClick }) => {
           <div className="w-full flex flex-col mb-8">
             <div className="p-2 flex flex-row justify-center items-center gap-2 max-w-[230px] bg-[#FFEFE8] border-2 border-b-0 border-dotted border-[#888888] rounded-sm font-light">
               
-              WHAT'S YOUR INTENT?
+              WHAT&apos;S YOUR INTENT?
               <img src="/target_icon.png" alt="cursor" className="w-4 h-4" />
             </div>
             <div className="relative w-full">

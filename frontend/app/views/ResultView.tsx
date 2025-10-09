@@ -7,6 +7,7 @@ import CountUp from "@/components/CountUp";
 
 interface ResultViewProps {
   onRestart?: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   result?: any;
   linkedinUrl?: string;
 }
@@ -34,11 +35,11 @@ const ResultView: React.FC<ResultViewProps> = ({ onRestart, result, linkedinUrl 
           </h1>
           <p className="text-xl text-[#7a7a7a] mb-12 w-full text-left font-light">
             Prospecting scores are guides, not guarantees. They help you
-            prioritize, but don't assume a high score means they'll buy.
+            prioritize, but don&apos;t assume a high score means they&apos;ll buy.
           </p>
 
           <div className="flex w-full flex-col items-start justify-start">
-            <h2 className="text-lg font-semibold text-gray-800 mb-1">
+            <h2 className="text-lg font-semiboldg text-gray-800 mb-1">
               Score
             </h2>
             <motion.h2 className="text-5xl font-semibold text-gray-800 mb-4">

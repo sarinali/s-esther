@@ -20,6 +20,7 @@ export default function Home() {
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [steps, setSteps] = useState<SSEStep[]>([]);
   const [currentStep, setCurrentStep] = useState<{ title: string; description: string } | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [prospectingResult, setProspectingResult] = useState<any>(null);
   const currentStepRef = React.useRef<{ title: string; description: string } | null>(null);
 
